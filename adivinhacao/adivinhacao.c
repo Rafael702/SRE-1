@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int main()
 {
@@ -44,16 +45,15 @@ int main()
         }
         else if (chuteMaiorQueNumeroSecreto)
         {
-            pontosPerdidos = (chute - numeroSecreto) / (double)2;
             printf("Seu chute foi maior que o número secreto\n");
         }
         else
         {
-            pontosPerdidos = (numeroSecreto - chute) / (double)2;
             printf("Seu chute foi menor que o número secreto\n");
         }
         tentativas++;
 
+        pontosPerdidos = abs(chute - numeroSecreto) / (double)2;
         pontos -= pontosPerdidos;
     }
     printf("Fim de Jogo!\n");

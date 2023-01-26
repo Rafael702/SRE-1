@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int main()
 {
@@ -12,4 +13,11 @@ int main()
     int piConvetido = (int)pi;
 
     printf("%f %d\n", pi, piConvetido);
+
+    int d = 3;
+    int e = -3;
+
+    int f = abs(d * e);
+
+    printf("%d\n", f);
 }
