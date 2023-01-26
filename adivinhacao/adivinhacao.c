@@ -44,17 +44,16 @@ int main()
         }
         else if (chuteMaiorQueNumeroSecreto)
         {
-            pontosPerdidos = (chute - numeroSecreto) / 2.0;
+            pontosPerdidos = (chute - numeroSecreto) / (double)2;
             printf("Seu chute foi maior que o número secreto\n");
         }
         else
         {
-            pontosPerdidos = (numeroSecreto - chute) / 2.0;
+            pontosPerdidos = (numeroSecreto - chute) / (double)2;
             printf("Seu chute foi menor que o número secreto\n");
         }
         tentativas++;
 
-        
         pontos -= pontosPerdidos;
     }
     printf("Fim de Jogo!\n");
