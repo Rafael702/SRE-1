@@ -1,0 +1,17 @@
+{
+	"ulid": "01GRABVE57YHGC5TWXHFDTM677",
+	"minTime": 1675346990786,
+	"maxTime": 1675353600000,
+	"stats": {
+		"numSamples": 49307,
+		"numSeries": 861,
+		"numChunks": 1009
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01GRABVE57YHGC5TWXHFDTM677"
+		]
+	},
+	"version": 1
+}

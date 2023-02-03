@@ -1,0 +1,17 @@
+{
+	"ulid": "01GRABVEG3CBKJJKR1W8WBC893",
+	"minTime": 1675353691991,
+	"maxTime": 1675360800000,
+	"stats": {
+		"numSamples": 103538,
+		"numSeries": 861,
+		"numChunks": 1157
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01GRABVEG3CBKJJKR1W8WBC893"
+		]
+	},
+	"version": 1
+}

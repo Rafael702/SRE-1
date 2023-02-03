@@ -1,0 +1,17 @@
+{
+	"ulid": "01GR9DS76P045ZGV9DJ7CV5339",
+	"minTime": 1675339203010,
+	"maxTime": 1675346400000,
+	"stats": {
+		"numSamples": 405811,
+		"numSeries": 861,
+		"numChunks": 3471
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01GR9DS76P045ZGV9DJ7CV5339"
+		]
+	},
+	"version": 1
+}
