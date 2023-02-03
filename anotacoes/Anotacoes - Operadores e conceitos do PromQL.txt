@@ -1,0 +1,115 @@
+scrape_interval -> tempo de consulta
+
+Toda métrica tem três componentes:
+
+niveis de logs
+metric_name -> Nome da metrica
+Exemplo: logback_events_total
+
+Rótulos/labels -> Serie temporal que queremos identificar.
+
+Sample -> Resultado da consulta
+
+Existem 4 tipos de dados no Prometheus:
+intante_vector -> Vetor instantaneo
+rand_vector -> Vetor de uma série temporal
+
+intante_vector -> logback_events_total{applications="app-forum-api", instance="app-forum-api:8080", job="app-forum-api", level="debug"}
+
+rand_vector -> 	logback_events_total[1m]
+
+Linux: date -d @1675388445.295
+array=(@1675388445.295 @1675388450.295 @1675388455.294 @1675388460.295)
+for i in "${array[@]}" ; do date -d $i ; done
+Thu Feb  2 22:40:45 -03 2023
+Thu Feb  2 22:40:50 -03 2023
+Thu Feb  2 22:40:55 -03 2023
+Thu Feb  2 22:41:00 -03 2023
+
+
+FOrmas de consulta:
+rand_vector -> 	logback_events_total[5m:30s]
+
+Saida tabulada e grafico
+
+Para o grafico, não funciona em consultas com mais de um retorno. Só o escalar ou outro semelhante.
+"Error executing query: invalid expression type "range vector" for range query, must be Scalar or instant Vector"
+
+
+A consulta scalar é um float.
+
+hikaricp_connections_idle{applications="app-forum-api",pool="HikariPool-1",} 10.0
+Com a consulta acima foi possivel gerar graficos.
+
+Existem quatro tipo de métricas>
+Counter -> Acumulativa -> Se a aplicação for reiniciada, esta aplicação vai zerar. Serve para valores incrementais
+hikaricp_connections_acquire_seconds_count{applications="app-forum-api",pool="HikariPool-1",}
+
+Gauge -> Serve para valores variados - Sofre incrementos e decrementos
+jvm_threads_live_threads{applications="app-forum-api",}
+
+Histogram -> Olha para duração e retorno da resposta
+le=0.05 -> Menor ou igual
+le="+inf" -> Infinito
+
+http_server_requests_seconds_bucket{applications="app-forum-api",exception="None",method="GET",outcome="SUCCESS",status="200",uri="/topicos/{id}",le="0.05",}
+
+Também incrementa e decrementa
+Histogram quantis
+
+Summary -> Semelhante ao Histogram
+
+
+Service Level Agreement, que significa “Acordo de Nível de Serviço - ANS
+
+Tipo de consulta:
+http_server_requests_seconds_count{application="app-forum-api",method="GET",status="200"}
+
+Podemos filtrar a nossa consulta. Se não quisermos determinado valor, podemos indicar a sua label e colocar a operador: != (diferente de)
+
+ficou:
+uri!="/actuator/prometheus" -> Não queremos a url /actuator/prometheus na nossa consulta.
+
+http_server_requests_seconds_count{applications="app-forum-api", method="GET", status="200", uri!="/actuator/prometheus"}
+
+~ -> seletor que suporta regex.
+Se quisermos um ou usaremos a pipe (|)
+fica:
+method=~"GET|POST" -> Requisições com tipo de metodo GET ou POST
+http_server_requests_seconds_count{applications="app-forum-api", method=~"GET|POST", status="200", uri!="/actuator/prometheus"}
+
+. -> Equivale a um coringa. Valor Qualquer
+
+Uma API pode retornar diversos tipos de status da casa 200. Seja 201, 204 e etc..
+Como indicariamos isso no prometheus?
+Através do coringa . 
+Contudo, para isso precisamos do seletor que aceita regex, ~
+Fica:
+status=~"2..", 
+
+Se houver outro tipo de status por de trás ocorrendo, podemos indicar ele também, atráves do ou -> |
+status=~"2..|3.."
+http_server_requests_seconds_count{applications="app-forum-api", method=~"GET|POST", status=~"2..|3..", uri!="/actuator/prometheus"}
+
+Se quisermos que a nossa consulta traga apenas os casos de erro 500, podemos usar o operador de negação: !
+Fica: status!~"2..|3.."
+Apenas o igual mudou.
+Assim fizemos uma consulta customizada.
+
+Se quisermos seguir para um nivel de consulta temporal. Por exemplo: quantas consultas x, com metodo x, com status x.. aconteceu a um minutos atrás?
+Podemos usar o offset:
+Fica:
+offset 60m
+http_server_requests_seconds_count{applications="app-forum-api", method=~"GET|POST", status!~"2..|3..", uri!="/actuator/prometheus"} offset 60m
+
+Não temos de forma visivel, a taxa de crescimento dessas séries temperais.
+http_server_requests_seconds_count{applications="app-forum-api", uri!="/actuator/prometheus"}[1m]
+
+Para isso, podemos usar o increase(), que pega a taxa de crescimento.
+increase(http_server_requests_seconds_count{applications="app-forum-api", uri!="/actuator/prometheus"}[1m])
+
+sum é um agregador. Ele pode pegar o increase e trazer a soma total de requisições.
+sum(increase(http_server_requests_seconds_count{applications="app-forum-api", uri!="/actuator/prometheus"}[5m]))
+
+irate -> Pega o número de requisição por segundo
+irate(http_server_requests_seconds_count{applications="app-forum-api", uri!="/actuator/prometheus"}[5m])
